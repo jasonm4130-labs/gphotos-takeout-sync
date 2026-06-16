@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "description": "Group the bundled tool bumps (immich-go, supercronic, alpine) into one PR",
+      "matchManagers": ["dockerfile"],
+      "groupName": "image tooling"
+    }
+  ]
+}

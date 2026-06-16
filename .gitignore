@@ -1,0 +1,10 @@
+# local runtime / scratch
+work/
+state/
+*.log
+
+# never commit secrets or rclone configs
+*.conf
+rclone.conf
+*_api_key*
+.env
