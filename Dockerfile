@@ -19,15 +19,16 @@ RUN apk add --no-cache \
       tini \
       tzdata
 
-# immich-go — verified against the release's own checksums.txt
+# immich-go — verified against the release's own checksums.txt.
+# Download with -O so the local filename matches the name in checksums.txt.
 RUN set -eux; \
     cd /tmp; \
-    curl -fsSL -o immich-go.tar.gz \
+    curl -fsSL -O \
       "https://github.com/simulot/immich-go/releases/download/v${IMMICH_GO_VERSION}/immich-go_Linux_x86_64.tar.gz"; \
-    curl -fsSL -o checksums.txt \
+    curl -fsSL -O \
       "https://github.com/simulot/immich-go/releases/download/v${IMMICH_GO_VERSION}/checksums.txt"; \
     grep "immich-go_Linux_x86_64.tar.gz" checksums.txt | sha256sum -c -; \
-    tar -xzf immich-go.tar.gz immich-go; \
+    tar -xzf immich-go_Linux_x86_64.tar.gz immich-go; \
     install -m 0755 immich-go /usr/local/bin/immich-go; \
     rm -rf /tmp/*
 
