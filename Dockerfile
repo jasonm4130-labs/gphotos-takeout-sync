@@ -6,6 +6,10 @@ LABEL org.opencontainers.image.title="gphotos-takeout-sync" \
       org.opencontainers.image.source="https://github.com/jasonm4130-labs/gphotos-takeout-sync" \
       org.opencontainers.image.licenses="MIT"
 
+# Fail piped RUN steps on the first error (hadolint DL4006). ash is alpine's
+# busybox shell and supports -o pipefail.
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+
 # Pinned tool versions (Renovate-tracked via the comment annotations below).
 # renovate: datasource=github-releases depName=simulot/immich-go
 ARG IMMICH_GO_VERSION=0.31.0
@@ -25,9 +29,10 @@ RUN apk add --no-cache \
       tzdata
 
 # immich-go — verified against the release's own checksums.txt.
-# Download with -O so the local filename matches the name in checksums.txt.
+# Download with -O so the local filename matches the name in checksums.txt;
+# WORKDIR (not cd) so sha256sum -c resolves the file in /tmp (hadolint DL3003).
+WORKDIR /tmp
 RUN set -eux; \
-    cd /tmp; \
     curl -fsSL -O \
       "https://github.com/simulot/immich-go/releases/download/v${IMMICH_GO_VERSION}/immich-go_Linux_x86_64.tar.gz"; \
     curl -fsSL -O \
@@ -36,6 +41,7 @@ RUN set -eux; \
     tar -xzf immich-go_Linux_x86_64.tar.gz immich-go; \
     install -m 0755 immich-go /usr/local/bin/immich-go; \
     rm -rf /tmp/*
+WORKDIR /
 
 # supercronic — verified against the binary's SHA-256. The release publishes only
 # the binary (no checksums file), so this digest is of the immutable

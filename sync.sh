@@ -44,7 +44,15 @@ write_metrics() {
   mv "${METRICS_FILE}.tmp" "${METRICS_FILE}"
 }
 
-trap 'rc=$?; log "FAILED (exit ${rc})"; write_metrics 1 0; exit ${rc}' ERR
+# ERR handler as a function so shellcheck sees rc assigned (SC2154) and the
+# logic stays readable. Fires on any failing command under `set -e`.
+on_err() {
+  rc=$?
+  log "FAILED (exit ${rc})"
+  write_metrics 1 0
+  exit "${rc}"
+}
+trap on_err ERR
 
 [ -r "${API_KEY_FILE}" ] || { log "missing immich api key at ${API_KEY_FILE}"; exit 1; }
 API_KEY="$(cat "${API_KEY_FILE}")"

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-17
+
+### Fixed
+
+- Lint CI now passes. The gate added in 0.1.4 immediately flagged pre-existing
+  issues: Dockerfile `cd` → `WORKDIR` (hadolint DL3003) and a
+  `SHELL ["/bin/ash", "-o", "pipefail", "-c"]` so piped `RUN` steps fail fast
+  (DL4006); the `sync.sh` ERR trap moved into an `on_err()` function so
+  shellcheck resolves `rc` (SC2154). No runtime behaviour change.
+
 ## [0.1.4] - 2026-06-17
 
 ### Added
@@ -98,7 +108,8 @@ unchanged.
   public GitHub Container Registry (`ghcr.io/jasonm4130-labs/gphotos-takeout-sync`).
 - Renovate config tracking immich-go and supercronic release versions.
 
-[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.1...v0.1.2

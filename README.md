@@ -86,7 +86,7 @@ Compose deployment).
 ```yaml
 services:
   gphotos-takeout-sync:
-    image: ghcr.io/jasonm4130-labs/gphotos-takeout-sync:0.1.4
+    image: ghcr.io/jasonm4130-labs/gphotos-takeout-sync:0.1.5
     container_name: gphotos-takeout-sync
     environment:
       SYNC_SOURCE: drive
@@ -325,7 +325,7 @@ Releases follow **semver** and are fully CI-driven:
 
 The `docker/metadata-action` **strips the leading `v`**, so tag `v0.1.4` publishes
 image tag `0.1.4` (plus `0.1`, a `sha-<short>` tag, and `latest` for the highest
-non-prerelease semver). **Current version: `v0.1.4`.**
+non-prerelease semver). **Current version: `v0.1.5`.**
 
 Bump the **minor** version for breaking env-var or behaviour changes; **patch** for
 fixes and dependency bumps.
