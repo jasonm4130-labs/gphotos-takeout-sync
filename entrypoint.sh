@@ -10,6 +10,13 @@ WORK_DIR="${WORK_DIR:-/work}"
 mkdir -p "${WORK_DIR}/zips" "${WORK_DIR}/state"
 chown -R "${PUID:-99}:${PGID:-100}" "${WORK_DIR}" 2>/dev/null || true
 
+# immich-go (and Go's os.UserCacheDir) writes to $HOME/.cache. The run user has
+# no HOME, so it falls back to /.cache (root-owned) and dies with "mkdir
+# /.cache: permission denied". Point HOME at the writable work dir — immich-go
+# then keeps its cache/logs under ${WORK_DIR}/.cache (survives the drive-mode
+# zip/extract cleanup).
+export HOME="${WORK_DIR}"
+
 # Docker Compose (non-swarm) bind-mounts file secrets as 0600 root:root, which
 # the unprivileged run user (PUID:PGID) cannot read — so the job would fail to
 # read the API key / rclone config. We run as root here (before su-exec), so
