@@ -1,0 +1,51 @@
+name: Feature Request
+description: Suggest an improvement or new capability.
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature. Please provide as much context as
+        possible so we can evaluate and prioritise it.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: >
+        What problem does this solve, or what limitation are you hitting?
+        Concrete examples help — e.g. "When I run with SYNC_SOURCE=drive,
+        archives older than 90 days are not cleaned up, so disk fills up."
+      placeholder: Describe the problem or use case that motivates this request.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: >
+        How would you like this to work? If you have a specific implementation
+        idea, describe it here. New env variables, CLI flags, behaviour changes,
+        etc.
+      placeholder: Describe what you would like to see added or changed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: >
+        What workarounds or alternative approaches have you already tried?
+        Are there other tools or features that partially solve this?
+      placeholder: List any alternatives you have considered or tried.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: >
+        Anything else relevant: links to related issues, immich-go upstream
+        features, rclone documentation, screenshots, etc.

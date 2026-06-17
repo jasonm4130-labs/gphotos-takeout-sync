@@ -1,0 +1,19 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Immich documentation
+    url: https://immich.app/docs
+    about: >
+      For questions about Immich server setup, API keys, or import behaviour,
+      check the official Immich docs first.
+  - name: immich-go documentation
+    url: https://github.com/simulot/immich-go
+    about: >
+      For questions or issues specific to the immich-go import tool (flags,
+      Google Photos JSON sidecar handling, duplicate detection), see the
+      upstream immich-go repository.
+  - name: rclone documentation
+    url: https://rclone.org/drive/
+    about: >
+      For help configuring rclone with Google Drive (OAuth setup, remote
+      naming, token refresh), refer to the official rclone Google Drive docs.

@@ -1,0 +1,136 @@
+name: Bug Report
+description: Something is not working as expected.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill out the fields below
+        so we can reproduce and fix the issue quickly.
+
+        **Before submitting:** check `docker logs <container>` and
+        `/work/state/last-import.log` for error messages to include below.
+
+  - type: input
+    id: image-version
+    attributes:
+      label: Image version / tag
+      description: >
+        The tag you are running. Run `docker inspect --format '{{index .Config.Labels "org.opencontainers.image.version"}}' gphotos-takeout-sync`
+        or check your compose file.
+      placeholder: "e.g. 0.1.3 or ghcr.io/jasonm4130-labs/gphotos-takeout-sync:0.1.3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment-method
+    attributes:
+      label: How are you running the container?
+      options:
+        - docker compose
+        - docker run
+        - other (describe in additional context)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sync-source
+    attributes:
+      label: SYNC_SOURCE mode
+      description: Which sync source are you using?
+      options:
+        - drive (rclone → Google Drive)
+        - local (LOCAL_PATH import / backfill)
+        - not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: container-mode
+    attributes:
+      label: Container mode (CMD arg)
+      description: First argument passed to the container.
+      options:
+        - cron (scheduled)
+        - backfill (one-shot local import)
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the unexpected behaviour in as much detail as possible.
+      placeholder: "e.g. The container exits immediately after starting with exit code 1."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: env-config
+    attributes:
+      label: Relevant environment variables
+      description: >
+        Paste your compose/run environment block. **Redact any secrets, API keys,
+        tokens, and OAuth credentials before posting.**
+      render: yaml
+      placeholder: |
+        IMMICH_SERVER: http://immich-server:2283
+        RCLONE_REMOTE: gdrive:Takeout
+        CRON_SCHEDULE: "0 9 * * 1"
+        PUID: 1000
+        PGID: 1000
+        TZ: America/New_York
+        # IMMICH_API_KEY_FILE / RCLONE_CONF_FILE — redact, do not paste key values
+    validations:
+      required: true
+
+  - type: textarea
+    id: last-import-log
+    attributes:
+      label: Last import log (/work/state/last-import.log)
+      description: >
+        Contents of `/work/state/last-import.log` (or the relevant tail).
+        Run: `docker exec gphotos-takeout-sync cat /work/state/last-import.log`
+      render: text
+      placeholder: Paste log output here (redact any tokens or keys).
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Metrics file (/work/state/metrics)
+      description: >
+        Contents of `/work/state/metrics`.
+        Run: `docker exec gphotos-takeout-sync cat /work/state/metrics`
+      render: text
+      placeholder: |
+        gphotos_sync_exit_code=0
+        gphotos_sync_assets_imported=0
+        gphotos_sync_last_success=1718600000
+        gphotos_sync_last_run=1718600000
+
+  - type: textarea
+    id: container-logs
+    attributes:
+      label: Container logs (docker logs)
+      description: >
+        Output of `docker logs gphotos-takeout-sync 2>&1 | tail -50` (or the
+        relevant section). Redact any tokens or keys.
+      render: text
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: >
+        Anything else that might help: host OS, Immich version, rclone version
+        (if overridden), relevant Docker network setup, etc.
