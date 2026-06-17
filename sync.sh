@@ -56,7 +56,29 @@ case "${SOURCE}" in
     rclone copy "${RCLONE_REMOTE}" "${ZIP_DIR}" \
       --config "${RCLONE_CONF}" \
       --transfers 4 --checkers 8 --fast-list --checksum
-    IMPORT_PATH="${ZIP_DIR}"
+    # Scheduled Google Takeout delivered to Drive arrives as multi-GB .tgz
+    # chunks; immich-go reads .zip archives and extracted folders, NOT tarballs.
+    # Extract any tarballs into a staging folder and import that; pass .zip
+    # archives straight through. Each chunk is deleted right after it extracts
+    # so peak local use stays near one extracted tree + one chunk, not double.
+    shopt -s nullglob
+    tarballs=( "${ZIP_DIR}"/*.tgz "${ZIP_DIR}"/*.tar.gz )
+    zips=( "${ZIP_DIR}"/*.zip )
+    if [ "${#tarballs[@]}" -gt 0 ]; then
+      EXTRACT_DIR="${WORK_DIR}/extracted"
+      rm -rf "${EXTRACT_DIR}"; mkdir -p "${EXTRACT_DIR}"
+      for t in "${tarballs[@]}"; do
+        log "extracting $(basename "${t}")"
+        tar -xzf "${t}" -C "${EXTRACT_DIR}"
+        [ "${DRY_RUN:-0}" = "1" ] || rm -f "${t}"
+      done
+      IMPORT_PATH="${EXTRACT_DIR}"
+    elif [ "${#zips[@]}" -gt 0 ]; then
+      IMPORT_PATH="${ZIP_DIR}"
+    else
+      log "no .tgz/.tar.gz/.zip in ${ZIP_DIR} after rclone copy — nothing to import"
+      exit 1
+    fi
     ;;
   local)
     IMPORT_PATH="${LOCAL_PATH}"
@@ -93,9 +115,12 @@ fi
 IMPORTED="$(grep -oiE '[0-9]+ (uploaded|added|imported|new)' "${IMPORT_LOG}" | grep -oE '[0-9]+' | sort -n | tail -1 || true)"
 IMPORTED="${IMPORTED:-0}"
 
-# Free Drive quota: clear staged zips after a successful real drive run.
+# Free LOCAL staging after a successful real drive run (the .tgz chunks are
+# already removed during extraction; this clears any .zip passthrough and the
+# extracted tree). rclone copy leaves the source in Drive untouched — Drive
+# housekeeping is intentionally manual.
 if [ "${SOURCE}" = "drive" ] && [ "${DRY_RUN:-0}" != "1" ]; then
-  rm -rf "${ZIP_DIR:?}/"* 2>/dev/null || true
+  rm -rf "${ZIP_DIR:?}/"* "${WORK_DIR:?}/extracted" 2>/dev/null || true
 fi
 
 write_metrics 0 "${IMPORTED}"
