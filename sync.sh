@@ -100,8 +100,11 @@ immich-go upload from-google-photos \
   --include-unmatched=true \
   "${DRY_ARGS[@]}" \
   "${IMPORT_PATH}" 2>&1 | tee "${IMPORT_LOG}"
-RC=${PIPESTATUS[0]}
+# Capture the whole pipe status at once — any later command resets PIPESTATUS.
+PIPE=( "${PIPESTATUS[@]}" )
 set -e
+RC="${PIPE[0]}"
+[ "${PIPE[1]:-0}" -eq 0 ] || log "warning: tee to ${IMPORT_LOG} failed (rc=${PIPE[1]}); last-import.log may be truncated"
 
 if [ "${RC}" -ne 0 ]; then
   log "immich-go exited ${RC}"
