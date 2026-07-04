@@ -22,6 +22,18 @@ RCLONE_CONF="${RCLONE_CONF_FILE:-/run/secrets/rclone_conf}"
 RCLONE_REMOTE="${RCLONE_REMOTE:-gdrive:Takeout}"
 
 mkdir -p "${ZIP_DIR}" "${STATE_DIR}"
+
+# immich-go (Go's os.UserCacheDir) resolves its cache to $XDG_CACHE_HOME, then
+# $HOME/.cache. The entrypoint drops privileges to the run user, which resets
+# HOME to "/" (uid 99 has no passwd home) — so a bare $HOME/.cache becomes
+# /.cache (root-owned) and immich-go dies with "mkdir /.cache: permission
+# denied". Pin the cache under WORK_DIR *here*: this runs after the privilege
+# drop (unlike the entrypoint's HOME export, which su-exec/supercronic reset),
+# and XDG_CACHE_HOME takes precedence over HOME regardless.
+export XDG_CACHE_HOME="${WORK_DIR}/.cache"
+export HOME="${WORK_DIR}"
+mkdir -p "${XDG_CACHE_HOME}"
+
 log() { echo "$(date -u +%FT%TZ) [gphotos-sync] $*"; }
 
 # Atomically write the metrics file telegraf reads. Preserves the prior

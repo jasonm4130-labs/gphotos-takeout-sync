@@ -10,11 +10,11 @@ WORK_DIR="${WORK_DIR:-/work}"
 mkdir -p "${WORK_DIR}/zips" "${WORK_DIR}/state"
 chown -R "${PUID:-99}:${PGID:-100}" "${WORK_DIR}" 2>/dev/null || true
 
-# immich-go (and Go's os.UserCacheDir) writes to $HOME/.cache. The run user has
-# no HOME, so it falls back to /.cache (root-owned) and dies with "mkdir
-# /.cache: permission denied". Point HOME at the writable work dir — immich-go
-# then keeps its cache/logs under ${WORK_DIR}/.cache (survives the drive-mode
-# zip/extract cleanup).
+# Point HOME at the writable work dir for any command that runs in this (root)
+# context before the privilege drop. NOTE: this export does NOT survive into the
+# scheduled job — su-exec/supercronic reset HOME to "/" for uid 99 — so the
+# authoritative cache-dir fix (XDG_CACHE_HOME) lives in sync.sh, which runs
+# post-drop. Kept here as a harmless default, not as the immich-go fix.
 export HOME="${WORK_DIR}"
 
 # Docker Compose (non-swarm) bind-mounts file secrets as 0600 root:root, which
@@ -33,7 +33,11 @@ if [ -d /run/secrets ]; then
     install -m 0600 -o "${PUID:-99}" -g "${PGID:-100}" "${s}" "${SECRETS_DIR}/$(basename "${s}")"
   done
   chown "${PUID:-99}:${PGID:-100}" "${SECRETS_DIR}"
-  chmod 0500 "${SECRETS_DIR}"
+  # 0700 (not 0500): rclone saves refreshed OAuth tokens by writing a temp file
+  # in the config's directory and renaming over it, so the run user needs write
+  # on this dir — 0500 made that fail ("failed to create temp file for new
+  # config: permission denied") and risked a stale refresh token after rotation.
+  chmod 0700 "${SECRETS_DIR}"
   export IMMICH_API_KEY_FILE="${SECRETS_DIR}/immich_api_key"
   export RCLONE_CONF_FILE="${SECRETS_DIR}/rclone_conf"
 fi

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-07-05
+
+### Fixed
+
+- Scheduled imports crashed at the immich-go step with `mkdir /.cache:
+  permission denied`, so no assets were imported. Root cause: dropping
+  privileges to the run user (uid 99, no passwd home) resets `HOME` to `/`, so
+  immich-go's cache resolved to the root-owned `/.cache`. The entrypoint's
+  `export HOME` didn't help — it's clobbered *after* export by the su-exec /
+  supercronic privilege drop. Fixed by exporting `XDG_CACHE_HOME=${WORK_DIR}/.cache`
+  in `sync.sh`, which runs post-drop and takes precedence over `HOME`.
+- rclone could not persist refreshed OAuth tokens (`failed to create temp file
+  for new config: permission denied`): the re-staged secrets dir was `0500`, but
+  rclone writes a temp file in the config's directory and renames over it.
+  Loosened to `0700` (owner-writable) so token refreshes — and any rotated
+  refresh token — are saved, avoiding a future auth failure.
+
 ## [0.1.5] - 2026-06-17
 
 ### Fixed
@@ -108,7 +125,8 @@ unchanged.
   public GitHub Container Registry (`ghcr.io/jasonm4130-labs/gphotos-takeout-sync`).
 - Renovate config tracking immich-go and supercronic release versions.
 
-[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.2...v0.1.3
