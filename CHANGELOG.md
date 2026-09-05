@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-09-05
+
+### Fixed
+
+- A `drive` run aborted with `rm: cannot remove '/work/extracted': Resource
+  busy` right after a successful 411 GB download when `/work/extracted` (or
+  `/work/zips`) is a bind mount — the natural layout once the staging is moved
+  off the appdata volume onto bulk storage. `rm -rf` on a mount point empties
+  it and then fails on the final rmdir, and `set -e` turned that into a failed
+  run before extraction began. Both the pre-extract reset and the post-import
+  cleanup now delete the directory *contents* (`find … -mindepth 1 -delete`)
+  and leave the directory in place.
+
 ## [0.1.6] - 2026-07-05
 
 ### Fixed
@@ -125,7 +138,8 @@ unchanged.
   public GitHub Container Registry (`ghcr.io/jasonm4130-labs/gphotos-takeout-sync`).
 - Renovate config tracking immich-go and supercronic release versions.
 
-[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jasonm4130-labs/gphotos-takeout-sync/compare/v0.1.3...v0.1.4

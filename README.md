@@ -48,7 +48,7 @@ flowchart LR
 2. On a cron schedule, the container runs `rclone copy` to pull new archive chunks from Drive into `/work/zips`.
 3. `.tgz`/`.tar.gz` chunks are **extracted** into `/work/extracted` (immich-go reads folders and `.zip`, not tarballs); `.zip` archives are passed through as-is.
 4. `immich-go upload from-google-photos` imports the result into Immich. Imports are **idempotent** — assets already on the server are skipped by checksum, so re-runs are safe.
-5. Local staging (`/work/zips`, `/work/extracted`) is cleaned up after a successful real run. The source archives **stay in Google Drive** — rclone `copy` never deletes them.
+5. Local staging (`/work/zips`, `/work/extracted`) is emptied after a successful real run — the directories themselves stay, so either may be its own bind mount (e.g. bulk storage instead of the appdata volume). The source archives **stay in Google Drive** — rclone `copy` never deletes them.
 
 The container bundles:
 

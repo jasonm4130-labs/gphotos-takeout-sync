@@ -86,7 +86,11 @@ case "${SOURCE}" in
     zips=( "${ZIP_DIR}"/*.zip )
     if [ "${#tarballs[@]}" -gt 0 ]; then
       EXTRACT_DIR="${WORK_DIR}/extracted"
-      rm -rf "${EXTRACT_DIR}"; mkdir -p "${EXTRACT_DIR}"
+      # Clear the *contents*, never the directory: deployments bind-mount
+      # zips/ and extracted/ from bulk storage, and `rm -rf` on a mount point
+      # fails with EBUSY after emptying it, which aborted the whole run.
+      mkdir -p "${EXTRACT_DIR}"
+      find "${EXTRACT_DIR}" -mindepth 1 -delete
       for t in "${tarballs[@]}"; do
         log "extracting $(basename "${t}")"
         tar -xzf "${t}" -C "${EXTRACT_DIR}"
@@ -143,7 +147,7 @@ IMPORTED="${IMPORTED:-0}"
 # extracted tree). rclone copy leaves the source in Drive untouched — Drive
 # housekeeping is intentionally manual.
 if [ "${SOURCE}" = "drive" ] && [ "${DRY_RUN:-0}" != "1" ]; then
-  rm -rf "${ZIP_DIR:?}/"* "${WORK_DIR:?}/extracted" 2>/dev/null || true
+  find "${ZIP_DIR:?}" "${WORK_DIR:?}/extracted" -mindepth 1 -delete 2>/dev/null || true
 fi
 
 write_metrics 0 "${IMPORTED}"
