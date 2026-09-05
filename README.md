@@ -55,7 +55,7 @@ The container bundles:
 | Tool | Role |
 |------|------|
 | [`rclone`](https://rclone.org) | Pulls Takeout archives down from Google Drive |
-| [`immich-go`](https://github.com/simulot/immich-go) `v0.31.0` | Imports Takeout into Immich (albums, EXIF, dates from JSON sidecars) |
+| [`immich-go`](https://github.com/simulot/immich-go) `v0.32.0` | Imports Takeout into Immich (albums, EXIF, dates from JSON sidecars) |
 | [`supercronic`](https://github.com/aptible/supercronic) | Cron scheduler with proper exit-code logging to stdout |
 | `su-exec` / `tini` | Drops privileges to `PUID:PGID`; clean init/signal handling |
 

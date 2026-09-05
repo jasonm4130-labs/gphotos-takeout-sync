@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-09-06
+
+### Fixed
+
+- Every `drive` run against Immich v3 failed on immich-go's first API call
+  (`GetAllAssets … cannot unmarshal number into Go struct field
+  Asset.Assets.items.duration of type string`), after the full download and
+  extract had already completed. Immich v3 changed `AssetResponseDto.duration`
+  from a string to integer milliseconds; immich-go 0.31.0 still decoded it as a
+  string. Bumped immich-go to 0.32.0, which drops the field and adds Immich v3
+  support.
+
 ## [0.1.7] - 2026-09-05
 
 ### Fixed
