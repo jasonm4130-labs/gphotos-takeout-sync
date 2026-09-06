@@ -14,7 +14,7 @@ SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # renovate: datasource=github-releases depName=simulot/immich-go
 ARG IMMICH_GO_VERSION=0.32.0
 # renovate: datasource=github-releases depName=aptible/supercronic
-ARG SUPERCRONIC_VERSION=0.2.46
+ARG SUPERCRONIC_VERSION=0.2.49
 ARG SUPERCRONIC_SHA256=5adff01c5a797663948e656d2b61d10932369ee437eb5cb54fa872b2960f222b
 
 RUN apk add --no-cache \
