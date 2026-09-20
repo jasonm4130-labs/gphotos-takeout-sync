@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1
-FROM alpine:3.20
+# syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
 
 LABEL org.opencontainers.image.title="gphotos-takeout-sync" \
       org.opencontainers.image.description="Mirror a Google Photos library into a self-hosted Immich server via scheduled Google Takeout, rclone, and immich-go." \
