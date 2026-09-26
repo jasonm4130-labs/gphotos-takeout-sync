@@ -14,9 +14,13 @@ jobs:
     # Mirrors jasonm4130-labs/transcoder's Blacksmith setup.
     runs-on: blacksmith-8vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: useblacksmith/setup-docker-builder@v1
+      # v2 ignores the v1 max-cache-size-mb input; the final prune step bounds
+      # retained cache before the post action commits the sticky disk.
+      - uses: useblacksmith/setup-docker-builder@19215110ab936351210feebdfa5b440b4493e184 # v2
+        with:
+          cache-key: gphotos-takeout-sync/Dockerfile
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
@@ -45,3 +49,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # Prune only after success: Blacksmith does not commit failed jobs' disks.
+      # v2's own GC is age-based (unused for 8 days), so this is what bounds the
+      # sticky disk's size. A retention target, not a peak limit.
+      - name: Retain up to 5 GiB of Docker build cache
+        timeout-minutes: 5
+        run: |
+          docker buildx du
+          docker buildx prune --force --all --max-used-space 5gb
+          docker buildx du
