@@ -1,16 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    "github>jasonm4130/renovate-config",
     "helpers:pinGitHubActionDigests"
   ],
-  "pinDigests": true,
-  "minimumReleaseAge": "7 days",
-  "internalChecksFilter": "strict",
-  "vulnerabilityAlerts": {
-    "description": "Security updates skip the 7-day release-age wait.",
-    "minimumReleaseAge": null
-  },
   "packageRules": [
     {
       "description": "Group the bundled tool bumps (immich-go, supercronic, alpine) into one PR",
@@ -27,7 +20,7 @@
       "groupName": "github actions"
     },
     {
-      "description": "supercronic's ARG carries a pinned SHA256 next to the version; a version-only bump fails the build's checksum step by design. Do not automerge \u2014 update SUPERCRONIC_SHA256 in the same PR.",
+      "description": "supercronic's ARG carries a pinned SHA256 next to the version; a version-only bump fails the build's checksum step by design. Do not automerge — update SUPERCRONIC_SHA256 in the same PR.",
       "matchDepNames": [
         "aptible/supercronic"
       ],
@@ -40,7 +33,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track the `# renovate: datasource=\u2026 depName=\u2026` + `ARG X_VERSION=` pairs in the Dockerfile. config:recommended does not read these comments \u2014 the built-in dockerfile manager only sees FROM/COPY --from \u2014 so immich-go 0.32.0 (2026-06) went unnoticed until Immich v3 broke every run.",
+      "description": "Track the `# renovate: datasource=… depName=…` + `ARG X_VERSION=` pairs in the Dockerfile. config:recommended does not read these comments — the built-in dockerfile manager only sees FROM/COPY --from — so immich-go 0.32.0 (2026-06) went unnoticed until Immich v3 broke every run.",
       "managerFilePatterns": [
         "/^Dockerfile$/"
       ],
@@ -49,5 +42,6 @@
       ],
       "extractVersionTemplate": "^v?(?<version>.*)$"
     }
-  ]
+  ],
+  "pinDigests": true
 }
