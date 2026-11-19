@@ -5,6 +5,12 @@
     "helpers:pinGitHubActionDigests"
   ],
   "pinDigests": true,
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "vulnerabilityAlerts": {
+    "description": "Security updates skip the 7-day release-age wait.",
+    "minimumReleaseAge": null
+  },
   "packageRules": [
     {
       "description": "Group the bundled tool bumps (immich-go, supercronic, alpine) into one PR",
